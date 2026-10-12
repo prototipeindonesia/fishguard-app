@@ -12,54 +12,82 @@ let state = {
     timerInterval: null,
     mapDrawn: false,
     navDrawn: false,
-    currentScreen: 'screen-home',
+    currentScreen: 'screen-login',
     language: 'id',
     theme: 'light',
-    history: []
+    history: [],
+    fishSpots: []
 };
 
 // --- INISIALISASI ---
 document.addEventListener('DOMContentLoaded', () => {
     loadSettings();
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+    generateFishSpots();
     updateProfileUI();
+    
+    // Sembunyikan navigator di halaman login awal
+    document.getElementById('bottom-nav').classList.add('hidden-nav');
+    
+    // Render awal
+    setTimeout(() => {
+        resizeCanvas();
+    }, 100);
+    
+    window.addEventListener('resize', resizeCanvas);
 });
 
+function generateFishSpots() {
+    state.fishSpots = [];
+    for(let i=0; i<15; i++) {
+        state.fishSpots.push({
+            x: Math.random() * 0.8 + 0.1,
+            y: Math.random() * 0.8 + 0.1
+        });
+    }
+}
+
+// FIX: Penanganan Canvas yang lebih baik
 function resizeCanvas() {
     const mapCanvas = document.getElementById('mapCanvas');
     const navCanvas = document.getElementById('navCanvas');
-    if(mapCanvas) {
+    
+    if (mapCanvas && mapCanvas.parentElement) {
         mapCanvas.width = mapCanvas.parentElement.clientWidth;
         mapCanvas.height = mapCanvas.parentElement.clientHeight;
     }
-    if(navCanvas) {
+    if (navCanvas && navCanvas.parentElement) {
         navCanvas.width = navCanvas.parentElement.clientWidth;
         navCanvas.height = navCanvas.parentElement.clientHeight;
     }
-    if(state.mapDrawn) drawMap('mapCanvas', false);
-    if(state.navDrawn) drawMap('navCanvas', true);
+    
+    // Hanya gambar ulang jika layar sedang aktif
+    if (state.currentScreen === 'screen-map') drawMap('mapCanvas', false);
+    if (state.currentScreen === 'screen-nav') drawMap('navCanvas', true);
 }
 
 // --- PENGATURAN & BAHASA ---
 function loadSettings() {
-    const savedTheme = localStorage.getItem('fishguard_theme');
-    if (savedTheme === 'dark') {
-        state.theme = 'dark';
-        document.body.classList.add('dark-mode');
-        document.getElementById('current-theme').innerText = 'Gelap';
-    }
-    
-    const savedLang = localStorage.getItem('fishguard_lang');
-    if (savedLang) {
-        state.language = savedLang;
-        applyLanguage();
-    }
-    
-    const savedHistory = localStorage.getItem('fishguard_history');
-    if (savedHistory) {
-        state.history = JSON.parse(savedHistory);
-        document.getElementById('history-count').innerText = state.history.length + ' Kali';
+    try {
+        const savedTheme = localStorage.getItem('fishguard_theme');
+        if (savedTheme === 'dark') {
+            state.theme = 'dark';
+            document.body.classList.add('dark-mode');
+            document.getElementById('current-theme').innerText = 'Gelap';
+        }
+        
+        const savedLang = localStorage.getItem('fishguard_lang');
+        if (savedLang) {
+            state.language = savedLang;
+            applyLanguage();
+        }
+        
+        const savedHistory = localStorage.getItem('fishguard_history');
+        if (savedHistory) {
+            state.history = JSON.parse(savedHistory);
+            document.getElementById('history-count').innerText = state.history.length + ' Kali';
+        }
+    } catch (e) {
+        console.warn("LocalStorage tidak tersedia atau error:", e);
     }
 }
 
@@ -72,140 +100,70 @@ function toggleTheme() {
         document.body.classList.remove('dark-mode');
         document.getElementById('current-theme').innerText = 'Terang';
     }
-    localStorage.setItem('fishguard_theme', state.theme);
-    // Redraw map agar warna menyesuaikan
-    if(state.mapDrawn) drawMap('mapCanvas', false);
-    if(state.navDrawn) drawMap('navCanvas', true);
+    try { localStorage.setItem('fishguard_theme', state.theme); } catch(e) {}
+    
+    if(state.currentScreen === 'screen-map') drawMap('mapCanvas', false);
+    if(state.currentScreen === 'screen-nav') drawMap('navCanvas', true);
 }
 
 function toggleLanguage() {
     state.language = state.language === 'id' ? 'en' : 'id';
-    localStorage.setItem('fishguard_lang', state.language);
+    try { localStorage.setItem('fishguard_lang', state.language); } catch(e) {}
     applyLanguage();
 }
 
 function applyLanguage() {
     const translations = {
         id: {
-            welcome: "Selamat Datang",
-            tagline: "Navigasi Aman, Tangkapan Maksimal",
-            login_btn: "Masuk",
-            guest_btn: "Masuk sebagai Tamu",
-            or: "atau",
-            weather_title: "Info Cuaca & Gelombang",
-            safe_badge: "LAYAK MELAUT",
-            weather_cond: "Cuaca",
-            weather_cond_val: "Cerah Berawan",
-            weather_wave: "Tinggi Gelombang",
-            weather_wind: "Kecepatan Angin",
-            quick_menu: "Menu Cepat",
-            menu_fuel: "Hitung BBM",
-            menu_fish: "Cari Ikan",
-            menu_nav: "Navigasi",
-            menu_profile: "Profil",
-            sos_btn: "TOMBOL SOS (DARURAT)",
-            fuel_title: "Hitung Bahan Bakar",
-            fuel_duration: "Durasi Berlayar (Jam)",
-            fuel_power: "Daya Mesin (HP/PK)",
-            fuel_condition: "Kondisi Mesin",
-            fuel_calc_btn: "Hitung Estimasi",
-            fuel_result_title: "Rincian Estimasi Solar",
-            bd_power: "Daya Mesin",
-            bd_duration: "Durasi",
-            bd_condition: "Kondisi Mesin",
-            bd_base: "Konsumsi Dasar",
-            bd_factor: "Faktor Usia",
-            bd_total: "Total Estimasi",
+            welcome: "Selamat Datang", tagline: "Navigasi Aman, Tangkapan Maksimal",
+            login_btn: "Masuk", guest_btn: "Masuk sebagai Tamu", or: "atau",
+            weather_title: "Info Cuaca & Gelombang", safe_badge: "LAYAK MELAUT",
+            weather_cond: "Cuaca", weather_cond_val: "Cerah Berawan",
+            weather_wave: "Tinggi Gelombang", weather_wind: "Kecepatan Angin",
+            quick_menu: "Menu Cepat", menu_fuel: "Hitung BBM", menu_fish: "Cari Ikan",
+            menu_nav: "Navigasi", menu_profile: "Profil", sos_btn: "TOMBOL SOS (DARURAT)",
+            fuel_title: "Hitung Bahan Bakar", fuel_duration: "Durasi Berlayar (Jam)",
+            fuel_power: "Daya Mesin (HP/PK)", fuel_condition: "Kondisi Mesin",
+            fuel_calc_btn: "Hitung Estimasi", fuel_result_title: "Rincian Estimasi Solar",
+            bd_power: "Daya Mesin", bd_duration: "Durasi", bd_condition: "Kondisi Mesin",
+            bd_base: "Konsumsi Dasar", bd_factor: "Faktor Usia", bd_total: "Total Estimasi",
             fuel_note: "Harap bawa cadangan 10% lebih banyak.",
-            map_offline: "Offline",
-            map_legend_boat: "Kapal Anda",
-            map_legend_fish: "Potensi Ikan",
-            nav_start: "Mulai",
-            nav_guide: "Pandu Pulang",
-            nav_finish: "Selesai",
-            trip_summary: "Ringkasan Pelayaran",
-            trip_time: "Waktu:",
-            trip_fuel: "Sisa BBM:",
-            trip_status: "Status:",
-            profile_lang: "Bahasa",
-            profile_theme: "Mode Tampilan",
-            profile_history: "Riwayat Pelayaran",
-            profile_logout: "Keluar",
-            edit_title: "Edit Profil",
-            edit_name: "Nama Lengkap",
-            edit_phone: "Nomor HP",
-            edit_boat: "Nama Kapal",
-            edit_save: "Simpan Perubahan",
-            nav_home: "Beranda",
-            nav_map: "Peta",
-            nav_nav: "Navigasi",
-            nav_fuel: "BBM",
-            nav_profile: "Profil"
+            map_offline: "Offline", map_legend_boat: "Kapal Anda", map_legend_fish: "Potensi Ikan",
+            nav_start: "Mulai", nav_guide: "Pandu Pulang", nav_finish: "Selesai",
+            trip_summary: "Ringkasan Pelayaran", trip_time: "Waktu:", trip_fuel: "Sisa BBM:", trip_status: "Status:",
+            profile_lang: "Bahasa", profile_theme: "Mode Tampilan", profile_history: "Riwayat Pelayaran",
+            profile_logout: "Keluar", edit_title: "Edit Profil", edit_name: "Nama Lengkap",
+            edit_phone: "Nomor HP", edit_boat: "Nama Kapal", edit_save: "Simpan Perubahan",
+            nav_home: "Beranda", nav_map: "Peta", nav_nav: "Navigasi", nav_fuel: "BBM", nav_profile: "Profil"
         },
         en: {
-            welcome: "Welcome",
-            tagline: "Safe Navigation, Maximum Catch",
-            login_btn: "Login",
-            guest_btn: "Login as Guest",
-            or: "or",
-            weather_title: "Weather & Wave Info",
-            safe_badge: "SAFE TO SAIL",
-            weather_cond: "Weather",
-            weather_cond_val: "Partly Cloudy",
-            weather_wave: "Wave Height",
-            weather_wind: "Wind Speed",
-            quick_menu: "Quick Menu",
-            menu_fuel: "Fuel Calc",
-            menu_fish: "Find Fish",
-            menu_nav: "Navigation",
-            menu_profile: "Profile",
-            sos_btn: "SOS BUTTON (EMERGENCY)",
-            fuel_title: "Fuel Calculation",
-            fuel_duration: "Sailing Duration (Hours)",
-            fuel_power: "Engine Power (HP/PK)",
-            fuel_condition: "Engine Condition",
-            fuel_calc_btn: "Calculate Estimate",
-            fuel_result_title: "Fuel Estimation Details",
-            bd_power: "Engine Power",
-            bd_duration: "Duration",
-            bd_condition: "Engine Condition",
-            bd_base: "Base Consumption",
-            bd_factor: "Age Factor",
-            bd_total: "Total Estimate",
+            welcome: "Welcome", tagline: "Safe Navigation, Maximum Catch",
+            login_btn: "Login", guest_btn: "Login as Guest", or: "or",
+            weather_title: "Weather & Wave Info", safe_badge: "SAFE TO SAIL",
+            weather_cond: "Weather", weather_cond_val: "Partly Cloudy",
+            weather_wave: "Wave Height", weather_wind: "Wind Speed",
+            quick_menu: "Quick Menu", menu_fuel: "Fuel Calc", menu_fish: "Find Fish",
+            menu_nav: "Navigation", menu_profile: "Profile", sos_btn: "SOS BUTTON (EMERGENCY)",
+            fuel_title: "Fuel Calculation", fuel_duration: "Sailing Duration (Hours)",
+            fuel_power: "Engine Power (HP/PK)", fuel_condition: "Engine Condition",
+            fuel_calc_btn: "Calculate Estimate", fuel_result_title: "Fuel Estimation Details",
+            bd_power: "Engine Power", bd_duration: "Duration", bd_condition: "Engine Condition",
+            bd_base: "Base Consumption", bd_factor: "Age Factor", bd_total: "Total Estimate",
             fuel_note: "Please bring 10% extra reserve.",
-            map_offline: "Offline",
-            map_legend_boat: "Your Boat",
-            map_legend_fish: "Fish Potential",
-            nav_start: "Start",
-            nav_guide: "Guide Home",
-            nav_finish: "Finish",
-            trip_summary: "Sailing Summary",
-            trip_time: "Time:",
-            trip_fuel: "Fuel Left:",
-            trip_status: "Status:",
-            profile_lang: "Language",
-            profile_theme: "Theme Mode",
-            profile_history: "Sailing History",
-            profile_logout: "Logout",
-            edit_title: "Edit Profile",
-            edit_name: "Full Name",
-            edit_phone: "Phone Number",
-            edit_boat: "Boat Name",
-            edit_save: "Save Changes",
-            nav_home: "Home",
-            nav_map: "Map",
-            nav_nav: "Nav",
-            nav_fuel: "Fuel",
-            nav_profile: "Profile"
+            map_offline: "Offline", map_legend_boat: "Your Boat", map_legend_fish: "Fish Potential",
+            nav_start: "Start", nav_guide: "Guide Home", nav_finish: "Finish",
+            trip_summary: "Sailing Summary", trip_time: "Time:", trip_fuel: "Fuel Left:", trip_status: "Status:",
+            profile_lang: "Language", profile_theme: "Theme Mode", profile_history: "Sailing History",
+            profile_logout: "Logout", edit_title: "Edit Profile", edit_name: "Full Name",
+            edit_phone: "Phone Number", edit_boat: "Boat Name", edit_save: "Save Changes",
+            nav_home: "Home", nav_map: "Map", nav_nav: "Nav", nav_fuel: "Fuel", nav_profile: "Profile"
         }
     };
 
     const langData = translations[state.language];
     document.querySelectorAll('[data-lang]').forEach(el => {
         const key = el.getAttribute('data-lang');
-        if (langData[key]) {
-            el.innerText = langData[key];
-        }
+        if (langData[key]) el.innerText = langData[key];
     });
     
     document.getElementById('current-lang').innerText = state.language === 'id' ? 'Indonesia' : 'English';
@@ -215,21 +173,47 @@ function applyLanguage() {
 function showScreen(screenId) {
     state.currentScreen = screenId;
     
+    // FIX: Sembunyikan navigator di halaman login
+    const bottomNav = document.getElementById('bottom-nav');
+    if (screenId === 'screen-login') {
+        bottomNav.classList.add('hidden-nav');
+    } else {
+        bottomNav.classList.remove('hidden-nav');
+    }
+    
     document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
     document.getElementById(screenId).classList.add('active');
     
+    // Update Bottom Nav Active State
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
     if(screenId === 'screen-home') document.getElementById('nav-home').classList.add('active');
-    if(screenId === 'screen-map') {
-        document.getElementById('nav-map').classList.add('active');
-        if (!state.mapDrawn) { drawMap('mapCanvas', false); state.mapDrawn = true; }
-    }
-    if(screenId === 'screen-nav') {
-        document.getElementById('nav-nav').classList.add('active');
-        if (!state.navDrawn) { drawMap('navCanvas', true); state.navDrawn = true; }
-    }
+    if(screenId === 'screen-map') document.getElementById('nav-map').classList.add('active');
+    if(screenId === 'screen-nav') document.getElementById('nav-nav').classList.add('active');
     if(screenId === 'screen-fuel') document.getElementById('nav-fuel').classList.add('active');
     if(screenId === 'screen-profile' || screenId === 'screen-edit-profile') document.getElementById('nav-profile').classList.add('active');
+    
+    // FIX: Sinkronisasi UI saat berpindah screen
+    if(screenId === 'screen-nav') {
+        document.getElementById('nav-fuel-percent').innerText = state.fuelPercent;
+        document.getElementById('btn-start').disabled = state.isSailing;
+        document.getElementById('btn-guide').disabled = !state.isSailing;
+        document.getElementById('btn-finish').disabled = !state.isSailing;
+    }
+    
+    // FIX: Delay resize canvas agar container sudah ter-render (Mencegah peta kosong)
+    if (screenId === 'screen-map' || screenId === 'screen-nav') {
+        setTimeout(() => {
+            resizeCanvas();
+            if(screenId === 'screen-map') {
+                drawMap('mapCanvas', false);
+                state.mapDrawn = true;
+            }
+            if(screenId === 'screen-nav') {
+                drawMap('navCanvas', true);
+                state.navDrawn = true;
+            }
+        }, 150); // Delay 150ms untuk memastikan DOM selesai render
+    }
 }
 
 // --- LOGIN & PROFIL ---
@@ -263,9 +247,18 @@ function updateProfileUI() {
 }
 
 function saveProfile() {
-    state.user.name = document.getElementById('edit-name').value || 'Nelayan';
-    state.user.phone = document.getElementById('edit-phone').value || 'Belum Login';
-    state.user.boat = document.getElementById('edit-boat').value || 'Kapal Tanpa Nama';
+    const name = document.getElementById('edit-name').value.trim();
+    const phone = document.getElementById('edit-phone').value.trim();
+    const boat = document.getElementById('edit-boat').value.trim();
+    
+    if (!name) {
+        alert('Nama tidak boleh kosong!');
+        return;
+    }
+    
+    state.user.name = name;
+    state.user.phone = phone || 'Belum Login';
+    state.user.boat = boat || 'Kapal Tanpa Nama';
     updateProfileUI();
     alert('Profil berhasil disimpan!');
     showScreen('screen-profile');
@@ -286,7 +279,7 @@ function showHistory() {
         return;
     }
     let historyText = 'Riwayat Pelayaran:\n\n';
-    state.history.forEach((h, i) => {
+    state.history.slice().reverse().forEach((h, i) => {
         historyText += `${i+1}. ${h.date} | ${h.duration} Jam | Sisa BBM: ${h.fuel}%\n`;
     });
     alert(historyText);
@@ -294,21 +287,23 @@ function showHistory() {
 
 // --- HITUNG BBM ---
 function calculateFuel() {
-    const duration = parseFloat(document.getElementById('duration').value);
-    const power = parseFloat(document.getElementById('engine-power').value);
-    const condition = parseFloat(document.getElementById('engine-condition').value);
-    const conditionText = document.getElementById('engine-condition').options[document.getElementById('engine-condition').selectedIndex].text;
+    const durationInput = document.getElementById('duration').value;
+    const powerSelect = document.getElementById('engine-power');
+    const conditionSelect = document.getElementById('engine-condition');
+    
+    const duration = parseFloat(durationInput);
+    const power = parseFloat(powerSelect.value);
+    const condition = parseFloat(conditionSelect.value);
+    const conditionText = conditionSelect.options[conditionSelect.selectedIndex].text;
 
     if (isNaN(duration) || duration <= 0) {
         alert('Masukkan durasi yang valid (minimal 1 jam)!');
         return;
     }
 
-    // Rumus simulasi: (HP * Durasi * 0.2) * Faktor Kondisi
     const baseFuel = power * duration * 0.2;
     const totalFuel = (baseFuel * condition).toFixed(1);
 
-    // Update Breakdown
     document.getElementById('bd-power').innerText = power + ' HP';
     document.getElementById('bd-duration').innerText = duration + ' Jam';
     document.getElementById('bd-condition').innerText = conditionText.split('(')[0];
@@ -327,7 +322,7 @@ function calculateFuel() {
 // --- PETA & CANVAS DRAWING ---
 function drawMap(canvasId, isNavMode = false) {
     const canvas = document.getElementById(canvasId);
-    if (!canvas) return;
+    if (!canvas || canvas.width === 0 || canvas.height === 0) return;
     
     const ctx = canvas.getContext('2d');
     const width = canvas.width;
@@ -373,31 +368,32 @@ function drawMap(canvasId, isNavMode = false) {
         ctx.setLineDash([10, 10]);
         ctx.beginPath();
         ctx.moveTo(width / 2, height / 2);
-        ctx.lineTo(60, height - 100);
+        ctx.lineTo(60, height - 60);
         ctx.stroke();
         ctx.setLineDash([]);
 
         // Titik Awal
         ctx.fillStyle = '#10b981';
-        ctx.beginPath(); ctx.arc(60, height - 100, 10, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(60, height - 60, 10, 0, Math.PI * 2); ctx.fill();
         
         ctx.fillStyle = isDark ? '#f8fafc' : '#03045e';
         ctx.font = 'bold 12px Inter';
-        ctx.fillText('Titik Awal', 60, height - 80);
+        ctx.fillText('Titik Awal', 60, height - 40);
     } else {
         // Sebaran Ikan
         ctx.fillStyle = '#10b981';
-        for (let i = 0; i < 15; i++) {
-            const x = Math.random() * (width - 100) + 50;
-            const y = Math.random() * (height - 150) + 50;
-            if (Math.abs(x - width/2) < 50 && Math.abs(y - height/2) < 50) continue;
+        state.fishSpots.forEach(spot => {
+            const x = spot.x * width;
+            const y = spot.y * height;
+            
+            if (Math.abs(x - width/2) < 50 && Math.abs(y - height/2) < 50) return;
             
             ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI * 2); ctx.fill();
             
             ctx.strokeStyle = 'rgba(16, 185, 129, 0.4)';
             ctx.lineWidth = 2;
             ctx.beginPath(); ctx.arc(x, y, 12, 0, Math.PI * 2); ctx.stroke();
-        }
+        });
     }
 }
 
@@ -420,7 +416,12 @@ function startSailing() {
     state.startTime = Date.now();
     state.fuelPercent = 100;
     state.navDrawn = false;
-    drawMap('navCanvas', true);
+    
+    // Gambar ulang peta navigasi
+    setTimeout(() => {
+        resizeCanvas();
+        drawMap('navCanvas', true);
+    }, 100);
     
     document.getElementById('btn-start').disabled = true;
     document.getElementById('btn-guide').disabled = false;
@@ -429,20 +430,28 @@ function startSailing() {
     document.getElementById('nav-fuel-percent').innerText = state.fuelPercent;
     document.getElementById('fuel-indicator').classList.remove('danger');
     
+    if (state.timerInterval) clearInterval(state.timerInterval);
+    
     state.timerInterval = setInterval(() => {
         if (state.fuelPercent > 0) {
             state.fuelPercent -= 1;
-            document.getElementById('nav-fuel-percent').innerText = state.fuelPercent;
+            if (state.currentScreen === 'screen-nav') {
+                document.getElementById('nav-fuel-percent').innerText = state.fuelPercent;
+            }
             
             if (state.fuelPercent === 20) {
                 if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
-                document.getElementById('fuel-indicator').classList.add('danger');
+                if (state.currentScreen === 'screen-nav') {
+                    document.getElementById('fuel-indicator').classList.add('danger');
+                }
+                alert('⚠️ PERINGATAN: Sisa BBM 20%! Segera kembali.');
             }
             if (state.fuelPercent === 10) {
-                alert('🚨 BAHAYA: Sisa BBM 10%!\nSegera kembali ke pelabuhan.');
+                alert('🚨 BAHAYA: Sisa BBM 10%!');
             }
         } else {
             clearInterval(state.timerInterval);
+            state.timerInterval = null;
             alert('⛔ BBM HABIS! Mesin mati. Gunakan tombol SOS.');
             finishSailing();
         }
@@ -459,7 +468,10 @@ function guideHome() {
 function finishSailing() {
     if (!state.isSailing) return;
     
-    clearInterval(state.timerInterval);
+    if (state.timerInterval) {
+        clearInterval(state.timerInterval);
+        state.timerInterval = null;
+    }
     state.isSailing = false;
     
     document.getElementById('btn-start').disabled = false;
@@ -480,7 +492,6 @@ function finishSailing() {
         statusEl.style.color = 'var(--accent)';
     }
     
-    // Simpan ke Riwayat
     const now = new Date();
     const dateStr = `${now.getDate()}/${now.getMonth()+1} ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
     state.history.push({
@@ -488,11 +499,17 @@ function finishSailing() {
         duration: durationHours,
         fuel: state.fuelPercent
     });
-    localStorage.setItem('fishguard_history', JSON.stringify(state.history));
+    
+    try {
+        localStorage.setItem('fishguard_history', JSON.stringify(state.history));
+    } catch(e) {}
+    
     document.getElementById('history-count').innerText = state.history.length + ' Kali';
     
     document.getElementById('trip-summary').classList.remove('hidden');
-    document.getElementById('trip-summary').scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => {
+        document.getElementById('trip-summary').scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }, 100);
 }
 
 // --- SOS MODAL ---
