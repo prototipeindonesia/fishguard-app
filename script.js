@@ -1,11 +1,7 @@
 // State Aplikasi
 let state = {
     isLoggedIn: false,
-    user: {
-        name: 'Nelayan Tamu',
-        phone: 'Belum Login',
-        boat: 'Kapal Tanpa Nama'
-    },
+    user: { name: 'Nelayan Tamu', phone: 'Belum Login', boat: 'Kapal Tanpa Nama' },
     fuelPercent: 100,
     isSailing: false,
     startTime: null,
@@ -24,14 +20,12 @@ document.addEventListener('DOMContentLoaded', () => {
     loadSettings();
     generateFishSpots();
     updateProfileUI();
+    showScreen('screen-login'); // Mulai dari login
     
-    // Sembunyikan navigator di halaman login awal
-    document.getElementById('bottom-nav').classList.add('hidden-nav');
-    
-    // Render awal
+    // Render awal canvas setelah DOM siap
     setTimeout(() => {
         resizeCanvas();
-    }, 100);
+    }, 200);
     
     window.addEventListener('resize', resizeCanvas);
 });
@@ -46,7 +40,6 @@ function generateFishSpots() {
     }
 }
 
-// FIX: Penanganan Canvas yang lebih baik
 function resizeCanvas() {
     const mapCanvas = document.getElementById('mapCanvas');
     const navCanvas = document.getElementById('navCanvas');
@@ -60,7 +53,7 @@ function resizeCanvas() {
         navCanvas.height = navCanvas.parentElement.clientHeight;
     }
     
-    // Hanya gambar ulang jika layar sedang aktif
+    // Gambar ulang jika layar sedang aktif
     if (state.currentScreen === 'screen-map') drawMap('mapCanvas', false);
     if (state.currentScreen === 'screen-nav') drawMap('navCanvas', true);
 }
@@ -87,7 +80,7 @@ function loadSettings() {
             document.getElementById('history-count').innerText = state.history.length + ' Kali';
         }
     } catch (e) {
-        console.warn("LocalStorage tidak tersedia atau error:", e);
+        console.warn("LocalStorage error:", e);
     }
 }
 
@@ -169,20 +162,21 @@ function applyLanguage() {
     document.getElementById('current-lang').innerText = state.language === 'id' ? 'Indonesia' : 'English';
 }
 
-// --- NAVIGASI ANTAR SCREEN ---
+// --- NAVIGASI ANTAR SCREEN (FIXED) ---
 function showScreen(screenId) {
     state.currentScreen = screenId;
     
-    // FIX: Sembunyikan navigator di halaman login
-    const bottomNav = document.getElementById('bottom-nav');
-    if (screenId === 'screen-login') {
-        bottomNav.classList.add('hidden-nav');
-    } else {
-        bottomNav.classList.remove('hidden-nav');
-    }
-    
+    // Sembunyikan semua screen
     document.querySelectorAll('.screen').forEach(screen => screen.classList.remove('active'));
     document.getElementById(screenId).classList.add('active');
+    
+    // Sembunyikan Bottom Nav di halaman Login
+    const bottomNav = document.getElementById('bottom-nav');
+    if (screenId === 'screen-login') {
+        bottomNav.classList.add('hidden');
+    } else {
+        bottomNav.classList.remove('hidden');
+    }
     
     // Update Bottom Nav Active State
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
@@ -192,7 +186,7 @@ function showScreen(screenId) {
     if(screenId === 'screen-fuel') document.getElementById('nav-fuel').classList.add('active');
     if(screenId === 'screen-profile' || screenId === 'screen-edit-profile') document.getElementById('nav-profile').classList.add('active');
     
-    // FIX: Sinkronisasi UI saat berpindah screen
+    // Sinkronisasi UI saat berpindah screen
     if(screenId === 'screen-nav') {
         document.getElementById('nav-fuel-percent').innerText = state.fuelPercent;
         document.getElementById('btn-start').disabled = state.isSailing;
@@ -200,7 +194,7 @@ function showScreen(screenId) {
         document.getElementById('btn-finish').disabled = !state.isSailing;
     }
     
-    // FIX: Delay resize canvas agar container sudah ter-render (Mencegah peta kosong)
+    // FIX: Render canvas setelah transisi selesai
     if (screenId === 'screen-map' || screenId === 'screen-nav') {
         setTimeout(() => {
             resizeCanvas();
@@ -212,7 +206,7 @@ function showScreen(screenId) {
                 drawMap('navCanvas', true);
                 state.navDrawn = true;
             }
-        }, 150); // Delay 150ms untuk memastikan DOM selesai render
+        }, 100);
     }
 }
 
@@ -368,17 +362,17 @@ function drawMap(canvasId, isNavMode = false) {
         ctx.setLineDash([10, 10]);
         ctx.beginPath();
         ctx.moveTo(width / 2, height / 2);
-        ctx.lineTo(60, height - 60);
+        ctx.lineTo(60, height - 100);
         ctx.stroke();
         ctx.setLineDash([]);
 
         // Titik Awal
         ctx.fillStyle = '#10b981';
-        ctx.beginPath(); ctx.arc(60, height - 60, 10, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(60, height - 100, 10, 0, Math.PI * 2); ctx.fill();
         
         ctx.fillStyle = isDark ? '#f8fafc' : '#03045e';
         ctx.font = 'bold 12px Inter';
-        ctx.fillText('Titik Awal', 60, height - 40);
+        ctx.fillText('Titik Awal', 60, height - 80);
     } else {
         // Sebaran Ikan
         ctx.fillStyle = '#10b981';
@@ -416,12 +410,7 @@ function startSailing() {
     state.startTime = Date.now();
     state.fuelPercent = 100;
     state.navDrawn = false;
-    
-    // Gambar ulang peta navigasi
-    setTimeout(() => {
-        resizeCanvas();
-        drawMap('navCanvas', true);
-    }, 100);
+    drawMap('navCanvas', true);
     
     document.getElementById('btn-start').disabled = true;
     document.getElementById('btn-guide').disabled = false;
@@ -506,9 +495,10 @@ function finishSailing() {
     
     document.getElementById('history-count').innerText = state.history.length + ' Kali';
     
-    document.getElementById('trip-summary').classList.remove('hidden');
+    const summaryEl = document.getElementById('trip-summary');
+    summaryEl.classList.remove('hidden');
     setTimeout(() => {
-        document.getElementById('trip-summary').scrollIntoView({ behavior: 'smooth', block: 'end' });
+        summaryEl.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }, 100);
 }
 
