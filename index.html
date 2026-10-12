@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FISHGUARD - Navigator Nelayan</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome untuk Ikon Profesional -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Top Status Bar (Simulasi HP) -->
+        <div class="top-status-bar">
+            <span id="clock">00:00</span>
+            <div class="status-icons">
+                <i class="fa-solid fa-signal"></i>
+                <i class="fa-solid fa-wifi"></i>
+                <i class="fa-solid fa-battery-three-quarters"></i>
+            </div>
+        </div>
+
+        <!-- Header -->
+        <header id="main-header">
+            <div class="logo">
+                <i class="fa-solid fa-ship"></i> FISHGUARD
+            </div>
+            <div class="gps-badge">
+                <i class="fa-solid fa-satellite-dish"></i> GPS Aktif
+            </div>
+        </header>
+
+        <div class="content-wrapper">
+            <!-- Screen 1: Login -->
+            <section id="screen-login" class="screen active">
+                <div class="login-hero">
+                    <i class="fa-solid fa-water hero-icon"></i>
+                    <h1>Selamat Datang</h1>
+                    <p>Navigasi Aman, Tangkapan Maksimal</p>
+                </div>
+                <div class="login-form card glass">
+                    <div class="input-group">
+                        <i class="fa-solid fa-phone"></i>
+                        <input type="tel" id="phone-input" placeholder="Masukkan Nomor HP">
+                    </div>
+                    <button class="btn primary" onclick="login()">Masuk</button>
+                    <div class="divider">atau</div>
+                    <button class="btn secondary" onclick="loginAsGuest()">Masuk sebagai Tamu</button>
+                </div>
+            </section>
+
+            <!-- Screen 2: Beranda -->
+            <section id="screen-home" class="screen">
+                <div class="weather-card card glass-blue">
+                    <div class="weather-header">
+                        <h3><i class="fa-solid fa-cloud-sun"></i> Info Cuaca & Gelombang</h3>
+                        <span class="badge safe"><i class="fa-solid fa-check-circle"></i> LAYAK MELAUT</span>
+                    </div>
+                    <div class="weather-grid">
+                        <div class="weather-item">
+                            <span class="label">Cuaca</span>
+                            <span class="value">Cerah Berawan</span>
+                        </div>
+                        <div class="weather-item">
+                            <span class="label">Tinggi Gelombang</span>
+                            <span class="value">0.5 - 1.0 m</span>
+                        </div>
+                        <div class="weather-item">
+                            <span class="label">Kecepatan Angin</span>
+                            <span class="value">10 knot</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <h3 class="section-title">Menu Cepat</h3>
+                <div class="grid-menu">
+                    <button class="menu-btn card" onclick="showScreen('screen-fuel')">
+                        <i class="fa-solid fa-gas-pump" style="color: #f4a261;"></i>
+                        <span>Hitung BBM</span>
+                    </button>
+                    <button class="menu-btn card" onclick="showScreen('screen-map')">
+                        <i class="fa-solid fa-fish" style="color: #2a9d8f;"></i>
+                        <span>Cari Ikan</span>
+                    </button>
+                    <button class="menu-btn card" onclick="showScreen('screen-nav')">
+                        <i class="fa-solid fa-compass" style="color: #00b4d8;"></i>
+                        <span>Navigasi</span>
+                    </button>
+                    <button class="menu-btn card" onclick="alert('Fitur Profil segera hadir!')">
+                        <i class="fa-solid fa-user-astronaut" style="color: #a0a0a0;"></i>
+                        <span>Profil</span>
+                    </button>
+                </div>
+
+                <button class="btn sos-btn" onclick="triggerSOS()">
+                    <i class="fa-solid fa-tower-broadcast"></i> TOMBOL SOS (DARURAT)
+                </button>
+            </section>
+
+            <!-- Screen 3: Hitung BBM -->
+            <section id="screen-fuel" class="screen">
+                <h2 class="page-title"><i class="fa-solid fa-gas-pump"></i> Hitung Bahan Bakar</h2>
+                
+                <div class="card glass form-card">
+                    <div class="form-group">
+                        <label>Durasi Berlayar (Jam)</label>
+                        <input type="number" id="duration" value="4" min="1">
+                    </div>
+                    <div class="form-group">
+                        <label>Daya Mesin (HP/PK)</label>
+                        <select id="engine-power">
+                            <option value="5.5">5,5 HP / PK (Sampan)</option>
+                            <option value="15">15 HP / PK (Standar)</option>
+                            <option value="25">25 HP / PK (Sedang)</option>
+                            <option value="40">40 HP / PK (Besar / Katir)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Kondisi Mesin</label>
+                        <select id="engine-condition">
+                            <option value="1.0">Mesin Baru (< 5 tahun)</option>
+                            <option value="1.2">Mesin Sedang (5 - 10 tahun)</option>
+                            <option value="1.4">Mesin Tua (> 10 tahun)</option>
+                        </select>
+                    </div>
+                    <button class="btn primary" onclick="calculateFuel()">Hitung Estimasi</button>
+                </div>
+
+                <div id="fuel-result" class="card glass result-card hidden">
+                    <h3>Estimasi Solar</h3>
+                    <div class="big-number"><span id="fuel-liters">0</span> <span class="unit">Liter</span></div>
+                    <p class="note"><i class="fa-solid fa-circle-info"></i> Harap bawa cadangan 10% lebih banyak.</p>
+                </div>
+            </section>
+
+            <!-- Screen 4: Peta / Cari Ikan -->
+            <section id="screen-map" class="screen no-padding">
+                <div class="map-container">
+                    <canvas id="mapCanvas" width="400" height="600"></canvas>
+                    
+                    <!-- Floating UI Overlay -->
+                    <div class="map-overlay-top">
+                        <div class="pill glass"><i class="fa-solid fa-battery-half"></i> BBM: 100%</div>
+                        <button class="pill glass" onclick="toggleOffline()"><i class="fa-solid fa-download"></i> Offline</button>
+                    </div>
+                    
+                    <div class="map-legend glass">
+                        <div><span class="dot blue"></span> Kapal Anda</div>
+                        <div><span class="dot green"></span> Potensi Ikan</div>
+                    </div>
+
+                    <button class="fab" onclick="markSpot()">
+                        <i class="fa-solid fa-location-dot"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Screen 5: Navigasi -->
+            <section id="screen-nav" class="screen no-padding">
+                <div class="map-container">
+                    <canvas id="navCanvas" width="400" height="600"></canvas>
+                    
+                    <div class="map-overlay-top">
+                        <div class="pill glass fuel-warning"><i class="fa-solid fa-gas-pump"></i> BBM: <span id="nav-fuel-percent">100</span>%</div>
+                    </div>
+                </div>
+                
+                <div class="nav-controls glass">
+                    <button class="btn primary" onclick="startSailing()"><i class="fa-solid fa-play"></i> Mulai</button>
+                    <button class="btn warning" onclick="guideHome()"><i class="fa-solid fa-house"></i> Pandu Pulang</button>
+                    <button class="btn success" onclick="finishSailing()"><i class="fa-solid fa-flag-checkered"></i> Selesai</button>
+                </div>
+
+                <div id="trip-summary" class="card glass result-card hidden" style="margin: 20px;">
+                    <h3><i class="fa-solid fa-clipboard-check"></i> Ringkasan Pelayaran</h3>
+                    <div class="summary-row">
+                        <span>Waktu:</span> <strong id="sum-time">0 Jam</strong>
+                    </div>
+                    <div class="summary-row">
+                        <span>Sisa BBM:</span> <strong id="sum-fuel">100%</strong>
+                    </div>
+                    <div class="summary-row">
+                        <span>Status:</span> <strong id="sum-status" style="color: #2a9d8f;">AMAN</strong>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav glass">
+            <button onclick="showScreen('screen-home')" class="nav-item active" id="nav-home">
+                <i class="fa-solid fa-house"></i><span>Beranda</span>
+            </button>
+            <button onclick="showScreen('screen-map')" class="nav-item" id="nav-map">
+                <i class="fa-solid fa-map-location-dot"></i><span>Peta</span>
+            </button>
+            <button onclick="showScreen('screen-nav')" class="nav-item" id="nav-nav">
+                <i class="fa-solid fa-compass"></i><span>Navigasi</span>
+            </button>
+            <button onclick="showScreen('screen-fuel')" class="nav-item" id="nav-fuel">
+                <i class="fa-solid fa-gas-pump"></i><span>BBM</span>
+            </button>
+        </nav>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
