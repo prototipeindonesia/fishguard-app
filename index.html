@@ -20,86 +20,84 @@
             </div>
         </header>
 
-        <div class="content-wrapper">
-            <!-- Screen 1: Login (Navigator akan disembunyikan di sini) -->
-            <section id="screen-login" class="screen active login-screen">
+        <div class="content-wrapper" id="content-wrapper">
+            <!-- Screen 1: Login -->
+            <section id="screen-login" class="screen active">
                 <div class="login-hero">
-                    <div class="hero-icon-wrapper">
-                        <i class="fa-solid fa-water hero-icon"></i>
-                    </div>
-                    <h1>Selamat Datang</h1>
-                    <p>Navigasi Aman, Tangkapan Maksimal</p>
+                    <i class="fa-solid fa-water hero-icon"></i>
+                    <h1 data-lang="welcome">Selamat Datang</h1>
+                    <p data-lang="tagline">Navigasi Aman, Tangkapan Maksimal</p>
                 </div>
-                <div class="login-form card glass">
+                <div class="login-form card">
                     <div class="input-group">
                         <i class="fa-solid fa-phone"></i>
                         <input type="tel" id="phone-input" placeholder="Masukkan Nomor HP">
                     </div>
-                    <button class="btn primary" onclick="login()">Masuk</button>
-                    <div class="divider">atau</div>
-                    <button class="btn secondary" onclick="loginAsGuest()">Masuk sebagai Tamu</button>
+                    <button class="btn primary" onclick="login()" data-lang="login_btn">Masuk</button>
+                    <div class="divider" data-lang="or">atau</div>
+                    <button class="btn secondary" onclick="loginAsGuest()" data-lang="guest_btn">Masuk sebagai Tamu</button>
                 </div>
             </section>
 
             <!-- Screen 2: Beranda -->
             <section id="screen-home" class="screen">
-                <div class="weather-card card glass-blue">
+                <div class="weather-card card">
                     <div class="weather-header">
-                        <h3><i class="fa-solid fa-cloud-sun"></i> Info Cuaca & Gelombang</h3>
-                        <span class="badge safe"><i class="fa-solid fa-check-circle"></i> LAYAK MELAUT</span>
+                        <h3><i class="fa-solid fa-cloud-sun"></i> <span data-lang="weather_title">Info Cuaca & Gelombang</span></h3>
+                        <span class="badge safe" data-lang="safe_badge"><i class="fa-solid fa-check-circle"></i> LAYAK MELAUT</span>
                     </div>
                     <div class="weather-grid">
                         <div class="weather-item">
-                            <span class="label">Cuaca</span>
-                            <span class="value">Cerah Berawan</span>
+                            <span class="label" data-lang="weather_cond">Cuaca</span>
+                            <span class="value" data-lang="weather_cond_val">Cerah Berawan</span>
                         </div>
                         <div class="weather-item">
-                            <span class="label">Tinggi Gelombang</span>
+                            <span class="label" data-lang="weather_wave">Tinggi Gelombang</span>
                             <span class="value">0.5 - 1.0 m</span>
                         </div>
                         <div class="weather-item">
-                            <span class="label">Kecepatan Angin</span>
+                            <span class="label" data-lang="weather_wind">Kecepatan Angin</span>
                             <span class="value">10 knot</span>
                         </div>
                     </div>
                 </div>
                 
-                <h3 class="section-title">Menu Cepat</h3>
+                <h3 class="section-title" data-lang="quick_menu">Menu Cepat</h3>
                 <div class="grid-menu">
                     <button class="menu-btn card" onclick="showScreen('screen-fuel')">
                         <i class="fa-solid fa-gas-pump" style="color: #f4a261;"></i>
-                        <span>Hitung BBM</span>
+                        <span data-lang="menu_fuel">Hitung BBM</span>
                     </button>
                     <button class="menu-btn card" onclick="showScreen('screen-map')">
                         <i class="fa-solid fa-fish" style="color: #00b4d8;"></i>
-                        <span>Cari Ikan</span>
+                        <span data-lang="menu_fish">Cari Ikan</span>
                     </button>
                     <button class="menu-btn card" onclick="showScreen('screen-nav')">
                         <i class="fa-solid fa-compass" style="color: #0077b6;"></i>
-                        <span>Navigasi</span>
+                        <span data-lang="menu_nav">Navigasi</span>
                     </button>
                     <button class="menu-btn card" onclick="showScreen('screen-profile')">
                         <i class="fa-solid fa-user-astronaut" style="color: #6c757d;"></i>
-                        <span>Profil</span>
+                        <span data-lang="menu_profile">Profil</span>
                     </button>
                 </div>
 
                 <button class="btn sos-btn" onclick="openSOSModal()">
-                    <i class="fa-solid fa-tower-broadcast"></i> TOMBOL SOS (DARURAT)
+                    <i class="fa-solid fa-tower-broadcast"></i> <span data-lang="sos_btn">TOMBOL SOS (DARURAT)</span>
                 </button>
             </section>
 
             <!-- Screen 3: Hitung BBM -->
             <section id="screen-fuel" class="screen">
-                <h2 class="page-title"><i class="fa-solid fa-gas-pump"></i> Hitung Bahan Bakar</h2>
+                <h2 class="page-title"><i class="fa-solid fa-gas-pump"></i> <span data-lang="fuel_title">Hitung Bahan Bakar</span></h2>
                 
-                <div class="card glass form-card">
+                <div class="card form-card">
                     <div class="form-group">
-                        <label>Durasi Berlayar (Jam)</label>
+                        <label data-lang="fuel_duration">Durasi Berlayar (Jam)</label>
                         <input type="number" id="duration" value="4" min="1">
                     </div>
                     <div class="form-group">
-                        <label>Daya Mesin (HP/PK)</label>
+                        <label data-lang="fuel_power">Daya Mesin (HP/PK)</label>
                         <select id="engine-power">
                             <option value="5.5">5,5 HP / PK (Sampan)</option>
                             <option value="15">15 HP / PK (Standar)</option>
@@ -108,79 +106,76 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Kondisi Mesin</label>
+                        <label data-lang="fuel_condition">Kondisi Mesin</label>
                         <select id="engine-condition">
                             <option value="1.0">Mesin Baru (< 5 tahun)</option>
                             <option value="1.2">Mesin Sedang (5 - 10 tahun)</option>
                             <option value="1.4">Mesin Tua (> 10 tahun)</option>
                         </select>
                     </div>
-                    <button class="btn primary" onclick="calculateFuel()">Hitung Estimasi</button>
+                    <button class="btn primary" onclick="calculateFuel()" data-lang="fuel_calc_btn">Hitung Estimasi</button>
                 </div>
 
-                <div id="fuel-result" class="card glass result-card hidden">
-                    <h3 style="text-align: center; margin-bottom: 15px;">Rincian Estimasi Solar</h3>
+                <div id="fuel-result" class="card result-card hidden">
+                    <h3 style="text-align: center; margin-bottom: 15px;" data-lang="fuel_result_title">Rincian Estimasi Solar</h3>
                     <div class="breakdown-table">
-                        <div class="row"><span>Daya Mesin</span><span id="bd-power">-</span></div>
-                        <div class="row"><span>Durasi</span><span id="bd-duration">-</span></div>
-                        <div class="row"><span>Kondisi Mesin</span><span id="bd-condition">-</span></div>
-                        <div class="row"><span>Konsumsi Dasar</span><span id="bd-base">-</span></div>
-                        <div class="row"><span>Faktor Usia</span><span id="bd-factor">-</span></div>
-                        <div class="row total"><span>Total Estimasi</span><span id="bd-total">-</span></div>
+                        <div class="row"><span data-lang="bd_power">Daya Mesin</span><span id="bd-power">-</span></div>
+                        <div class="row"><span data-lang="bd_duration">Durasi</span><span id="bd-duration">-</span></div>
+                        <div class="row"><span data-lang="bd_condition">Kondisi Mesin</span><span id="bd-condition">-</span></div>
+                        <div class="row"><span data-lang="bd_base">Konsumsi Dasar</span><span id="bd-base">-</span></div>
+                        <div class="row"><span data-lang="bd_factor">Faktor Usia</span><span id="bd-factor">-</span></div>
+                        <div class="row total"><span data-lang="bd_total">Total Estimasi</span><span id="bd-total">-</span></div>
                     </div>
                     <p class="note" style="margin-top: 15px; text-align: center; font-size: 0.8rem; color: var(--text-muted);">
-                        <i class="fa-solid fa-circle-info"></i> Harap bawa cadangan 10% lebih banyak.
+                        <i class="fa-solid fa-circle-info"></i> <span data-lang="fuel_note">Harap bawa cadangan 10% lebih banyak.</span>
                     </p>
                 </div>
             </section>
 
-            <!-- Screen 4: Peta / Cari Ikan (Full Screen Map) -->
-            <section id="screen-map" class="screen map-fullscreen">
-                <div class="map-container">
+            <!-- Screen 4: Peta / Cari Ikan -->
+            <section id="screen-map" class="screen map-screen">
+                <div class="map-wrapper">
                     <canvas id="mapCanvas"></canvas>
-                    
                     <div class="map-overlay-top">
                         <div class="pill"><i class="fa-solid fa-battery-half"></i> BBM: 100%</div>
-                        <button class="pill" onclick="toggleOffline()"><i class="fa-solid fa-download"></i> Offline</button>
+                        <button class="pill" onclick="toggleOffline()"><i class="fa-solid fa-download"></i> <span data-lang="map_offline">Offline</span></button>
                     </div>
-                    
                     <div class="map-legend">
-                        <div><span class="dot blue"></span> Kapal Anda</div>
-                        <div><span class="dot green"></span> Potensi Ikan</div>
+                        <div><span class="dot blue"></span> <span data-lang="map_legend_boat">Kapal Anda</span></div>
+                        <div><span class="dot green"></span> <span data-lang="map_legend_fish">Potensi Ikan</span></div>
                     </div>
-
                     <button class="fab" onclick="markSpot()">
                         <i class="fa-solid fa-location-dot"></i>
                     </button>
                 </div>
             </section>
 
-            <!-- Screen 5: Navigasi (Map + Scrollable Controls) -->
-            <section id="screen-nav" class="screen nav-screen">
-                <div class="map-wrapper">
+            <!-- Screen 5: Navigasi (FIXED: Bisa discroll) -->
+            <section id="screen-nav" class="screen">
+                <div class="nav-map-wrapper">
                     <canvas id="navCanvas"></canvas>
                     <div class="map-overlay-top">
                         <div class="pill fuel-warning" id="fuel-indicator"><i class="fa-solid fa-gas-pump"></i> BBM: <span id="nav-fuel-percent">100</span>%</div>
                     </div>
                 </div>
                 
-                <div class="nav-controls-wrapper">
-                    <div class="nav-controls">
-                        <button class="btn primary" id="btn-start" onclick="startSailing()"><i class="fa-solid fa-play"></i> Mulai</button>
-                        <button class="btn warning" id="btn-guide" onclick="guideHome()" disabled><i class="fa-solid fa-house"></i> Pandu Pulang</button>
-                        <button class="btn success" id="btn-finish" onclick="finishSailing()" disabled><i class="fa-solid fa-flag-checkered"></i> Selesai</button>
+                <div class="nav-panel">
+                    <div class="nav-controls-grid">
+                        <button class="btn primary" id="btn-start" onclick="startSailing()"><i class="fa-solid fa-play"></i> <span data-lang="nav_start">Mulai</span></button>
+                        <button class="btn warning" id="btn-guide" onclick="guideHome()" disabled><i class="fa-solid fa-house"></i> <span data-lang="nav_guide">Pandu Pulang</span></button>
+                        <button class="btn success" id="btn-finish" onclick="finishSailing()" disabled><i class="fa-solid fa-flag-checkered"></i> <span data-lang="nav_finish">Selesai</span></button>
                     </div>
 
-                    <div id="trip-summary" class="card glass result-card hidden">
-                        <h3><i class="fa-solid fa-clipboard-check"></i> Ringkasan Pelayaran</h3>
+                    <div id="trip-summary" class="card result-card hidden" style="margin-top: 15px;">
+                        <h3><i class="fa-solid fa-clipboard-check"></i> <span data-lang="trip_summary">Ringkasan Pelayaran</span></h3>
                         <div class="summary-row">
-                            <span>Waktu:</span> <strong id="sum-time">0 Jam</strong>
+                            <span data-lang="trip_time">Waktu:</span> <strong id="sum-time">0 Jam</strong>
                         </div>
                         <div class="summary-row">
-                            <span>Sisa BBM:</span> <strong id="sum-fuel">100%</strong>
+                            <span data-lang="trip_fuel">Sisa BBM:</span> <strong id="sum-fuel">100%</strong>
                         </div>
                         <div class="summary-row">
-                            <span>Status:</span> <strong id="sum-status" style="color: #10b981;">AMAN</strong>
+                            <span data-lang="trip_status">Status:</span> <strong id="sum-status" style="color: #10b981;">AMAN</strong>
                         </div>
                     </div>
                 </div>
@@ -188,7 +183,7 @@
 
             <!-- Screen 6: Profil -->
             <section id="screen-profile" class="screen">
-                <div class="profile-header-card card glass">
+                <div class="profile-header-card card">
                     <div class="avatar">
                         <i class="fa-solid fa-user-astronaut"></i>
                     </div>
@@ -199,11 +194,11 @@
                     <button class="btn-icon" onclick="showScreen('screen-edit-profile')"><i class="fa-solid fa-pen"></i></button>
                 </div>
 
-                <div class="profile-menu card glass">
+                <div class="profile-menu card">
                     <div class="menu-item" onclick="toggleLanguage()">
                         <div class="menu-icon"><i class="fa-solid fa-language"></i></div>
                         <div class="menu-text">
-                            <span>Bahasa</span>
+                            <span data-lang="profile_lang">Bahasa</span>
                             <small id="current-lang">Indonesia</small>
                         </div>
                         <i class="fa-solid fa-chevron-right"></i>
@@ -211,7 +206,7 @@
                     <div class="menu-item" onclick="toggleTheme()">
                         <div class="menu-icon"><i class="fa-solid fa-moon"></i></div>
                         <div class="menu-text">
-                            <span>Mode Tampilan</span>
+                            <span data-lang="profile_theme">Mode Tampilan</span>
                             <small id="current-theme">Terang</small>
                         </div>
                         <i class="fa-solid fa-chevron-right"></i>
@@ -219,7 +214,7 @@
                     <div class="menu-item" onclick="showHistory()">
                         <div class="menu-icon"><i class="fa-solid fa-clock-rotate-left"></i></div>
                         <div class="menu-text">
-                            <span>Riwayat Pelayaran</span>
+                            <span data-lang="profile_history">Riwayat Pelayaran</span>
                             <small id="history-count">0 Kali</small>
                         </div>
                         <i class="fa-solid fa-chevron-right"></i>
@@ -227,47 +222,47 @@
                 </div>
 
                 <button class="btn danger" onclick="logout()" style="margin-top: 20px;">
-                    <i class="fa-solid fa-right-from-bracket"></i> Keluar
+                    <i class="fa-solid fa-right-from-bracket"></i> <span data-lang="profile_logout">Keluar</span>
                 </button>
             </section>
 
             <!-- Screen 7: Edit Profil -->
             <section id="screen-edit-profile" class="screen">
-                <h2 class="page-title"><i class="fa-solid fa-user-pen"></i> Edit Profil</h2>
-                <div class="card glass">
+                <h2 class="page-title"><i class="fa-solid fa-user-pen"></i> <span data-lang="edit_title">Edit Profil</span></h2>
+                <div class="card">
                     <div class="form-group">
-                        <label>Nama Lengkap</label>
+                        <label data-lang="edit_name">Nama Lengkap</label>
                         <input type="text" id="edit-name" placeholder="Masukkan nama">
                     </div>
                     <div class="form-group">
-                        <label>Nomor HP</label>
+                        <label data-lang="edit_phone">Nomor HP</label>
                         <input type="tel" id="edit-phone" placeholder="Masukkan nomor HP">
                     </div>
                     <div class="form-group">
-                        <label>Nama Kapal</label>
+                        <label data-lang="edit_boat">Nama Kapal</label>
                         <input type="text" id="edit-boat" placeholder="Masukkan nama kapal">
                     </div>
-                    <button class="btn primary" onclick="saveProfile()">Simpan Perubahan</button>
+                    <button class="btn primary" onclick="saveProfile()" data-lang="edit_save">Simpan Perubahan</button>
                 </div>
             </section>
         </div>
 
-        <!-- Bottom Navigation (Akan disembunyikan di halaman login) -->
+        <!-- Bottom Navigation (Akan disembunyikan di halaman Login) -->
         <nav class="bottom-nav" id="bottom-nav">
             <button onclick="showScreen('screen-home')" class="nav-item active" id="nav-home">
-                <i class="fa-solid fa-house"></i><span>Beranda</span>
+                <i class="fa-solid fa-house"></i><span data-lang="nav_home">Beranda</span>
             </button>
             <button onclick="showScreen('screen-map')" class="nav-item" id="nav-map">
-                <i class="fa-solid fa-map-location-dot"></i><span>Peta</span>
+                <i class="fa-solid fa-map-location-dot"></i><span data-lang="nav_map">Peta</span>
             </button>
             <button onclick="showScreen('screen-nav')" class="nav-item" id="nav-nav">
-                <i class="fa-solid fa-compass"></i><span>Navigasi</span>
+                <i class="fa-solid fa-compass"></i><span data-lang="nav_nav">Navigasi</span>
             </button>
             <button onclick="showScreen('screen-fuel')" class="nav-item" id="nav-fuel">
-                <i class="fa-solid fa-gas-pump"></i><span>BBM</span>
+                <i class="fa-solid fa-gas-pump"></i><span data-lang="nav_fuel">BBM</span>
             </button>
             <button onclick="showScreen('screen-profile')" class="nav-item" id="nav-profile">
-                <i class="fa-solid fa-user"></i><span>Profil</span>
+                <i class="fa-solid fa-user"></i><span data-lang="nav_profile">Profil</span>
             </button>
         </nav>
 
